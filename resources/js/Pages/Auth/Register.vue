@@ -17,6 +17,19 @@ const form = ref({
     password_confirmation: '',
 })
 
+const checkingAuth = ref(true)
+
+onMounted(() => {
+    const token = localStorage.getItem('token')
+
+    if (token) {
+        window.location.href = '/dashboard'
+        return
+    }
+
+    checkingAuth.value = false
+})
+
 const error = ref('')
 const loading = ref(false)
 
@@ -38,7 +51,8 @@ async function register () {
 </script>
 
 <template>
-    <div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div v-if="checkingAuth" class="min-h-screen bg-gray-100"></div>
+    <div v-else class="min-h-screen flex items-center justify-center bg-gray-100">
         <form @submit.prevent="register" class="bg-white p-8 rounded shadow w-full max-w-md">
 
             <h1 class="text-2xl font-bold mb-6">Register</h1>

@@ -1,9 +1,10 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue'
 import axios from 'axios'
-import AppLayout from './layouts/AppLayout.vue';
+import AppLayout from '../layouts/AppLayout.vue'
 
 const user = ref(null)
+const checkingAuth = ref(true)
 
 onMounted(async () => {
     const token = localStorage.getItem('token')
@@ -13,7 +14,7 @@ onMounted(async () => {
         return
     }
 
-    try{
+    try {
         const res = await axios.get('/api/user', {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -22,23 +23,24 @@ onMounted(async () => {
         })
 
         user.value = res.data.user ?? res.data
-    } catch (e){
+    } catch (e) {
         localStorage.removeItem('token')
         window.location.href = '/login'
+    } finally {
+        checkingAuth.value = false
     }
 })
 </script>
 
 <template>
-    <AppLayout>
+    <div v-if="checkingAuth" class="min-h-screen bg-gray-100"></div>
+
+    <AppLayout v-else>
         <h1 class="text-3xl font-bold mb-4">Dashboard</h1>
 
         <div class="bg-white p-6 rounded-md shadow">
             <p v-if="user" class="text-lg">
                 Welcome, {{ user.name }}
-            </p>
-            <p v-else>
-                Loading user...
             </p>
         </div>
     </AppLayout>

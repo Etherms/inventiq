@@ -1,14 +1,6 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import axios from 'axios'
-
-onMounted(() =>{
-    const token = localStorage.getItem('token')
-
-    if (token) {
-        window.location.href = '/dashboard'
-    }
-})
+import { ref } from 'vue'
+import { router } from '@inertiajs/vue3'
 
 const form = ref({
     name: '',
@@ -17,39 +9,18 @@ const form = ref({
     password_confirmation: '',
 })
 
-const checkingAuth = ref(true)
-
-onMounted(() => {
-    const token = localStorage.getItem('token')
-
-    if (token) {
-        window.location.href = '/dashboard'
-        return
-    }
-
-    checkingAuth.value = false
-})
-
-const error = ref('')
 const loading = ref(false)
 
-async function register () {
-    error.value = ''
+function register() {
     loading.value = true
 
-    try {
-        const res = await axios.post('/api/register', form.value)
-
-        localStorage.setItem('token', res.data.token)
-        window.location.href = '/dashboard'
-    } catch (e) {
-        error.value = e.response?.data?.message || 'Registration failed'
-    } finally {
-        loading.value = false
-    }
+    router.post('/register', form.value, {
+        onFinish: () => {
+            loading.value = false
+        },
+    })
 }
 </script>
-
 <template>
     <div v-if="checkingAuth" class="min-h-screen bg-gray-100"></div>
     <div v-else class="min-h-screen flex items-center justify-center bg-gray-100">

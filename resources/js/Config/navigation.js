@@ -19,8 +19,8 @@ export const navigation = [
         icon: Shield,
     },
     {
-        label: "Application",
-        href: "/application",
+        label: "Categories",
+        href: "/categories",
         icon: AppWindow,
     },
     {

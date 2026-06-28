@@ -1,32 +1,35 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 import { User, Settings, Palette, LogOut, ChevronDown } from 'lucide-vue-next'
 
 const props = defineProps({
     user: {
         type: Object,
-        default: () => ({
-            name: 'Inventiq User',
-            email: '',
-        }),
+        default: null,
     },
 })
 
 const open = ref(false)
 
+const displayUser = computed(() => {
+    return props.user ?? {
+        name: 'Inventiq User',
+        email: '',
+    }
+})
+
 const initials = computed(() => {
-    return props.user?.name
-        ?.split(' ')
+    return displayUser.value.name
+        .split(' ')
         .map(word => word[0])
         .join('')
         .slice(0, 2)
-        .toUpperCase() || 'IU'
+        .toUpperCase()
 })
 
 function logout() {
-    localStorage.removeItem('token')
-    window.location.href = '/login'
+    router.post('/logout')
 }
 </script>
 
@@ -50,10 +53,11 @@ function logout() {
         >
             <div class="border-b px-4 py-3">
                 <p class="text-sm font-semibold text-gray-900">
-                    {{ user.name }}
+                    {{ displayUser.name }}
                 </p>
+
                 <p class="text-xs text-gray-500">
-                    {{ user.email }}
+                    {{ displayUser.email }}
                 </p>
             </div>
 

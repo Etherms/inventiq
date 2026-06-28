@@ -1,41 +1,22 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import axios from 'axios'
-
-const checkingAuth = ref(true)
-const error = ref('')
-const loading = ref(false)
+import { ref } from 'vue'
+import { router } from '@inertiajs/vue3'
 
 const form = ref({
     email: '',
     password: '',
 })
 
-onMounted(() => {
-    const token = localStorage.getItem('token')
+const loading = ref(false)
 
-    if (token) {
-        window.location.href = '/dashboard'
-        return
-    }
-
-    checkingAuth.value = false
-})
-
-async function login() {
-    error.value = ''
+function login() {
     loading.value = true
 
-    try {
-        const res = await axios.post('/api/login', form.value)
-
-        localStorage.setItem('token', res.data.token)
-        window.location.href = '/dashboard'
-    } catch (e) {
-        error.value = e.response?.data?.message || 'Login failed'
-    } finally {
-        loading.value = false
-    }
+    router.post('/login', form.value, {
+        onFinish: () => {
+            loading.value = false
+        },
+    })
 }
 </script>
 

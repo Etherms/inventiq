@@ -1,5 +1,8 @@
 <script setup>
 import { Search, Mail, Bell, UserCircle } from 'lucide-vue-next'
+import MailButton from '../Notifications/MailButton.vue'
+import NotificationBell from '../Notifications/NotificationBell.vue'
+
 </script>
 
 <template>
@@ -17,13 +20,10 @@ import { Search, Mail, Bell, UserCircle } from 'lucide-vue-next'
         </div>
 
         <div class="flex items-center gap-4">
-            <button type="button" class="rounded-lg p-2 hover:bg-gray-100">
-                <Mail class="h-5 w-5 text-gray-700" />
-            </button>
+            <MailButton />
 
-            <button type="button" class="rounded-lg p-2 hover:bg-gray-100">
-                <Bell class="h-5 w-5 text-gray-700" />
-            </button>
+            <NotificationBell />
+            
 
             <button type="button" class="flex items-center gap-2 rounded-lg p-1.5 hover:bg-gray-100">
                 <img

@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
-import Sidebar from '../Components/Layout/Sidebar.vue'
-import Topbar from '../Components/Layout/Topbar.vue'
+import Sidebar from '../Components/Navigation/Sidebar.vue'
+import Topbar from '../Components/Navigation/Topbar.vue'
 
 const sidebarCollapsed = ref(false)
 

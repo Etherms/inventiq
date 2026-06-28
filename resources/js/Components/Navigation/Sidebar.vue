@@ -1,6 +1,7 @@
 <script setup>
-import { navigation } from '../../Config/navigation'
 import { Menu, LogOut } from 'lucide-vue-next'
+import { navigation } from '../../Config/navigation'
+import SidebarItem from './SidebarItem.vue'
 
 defineProps({
     collapsed: {
@@ -40,23 +41,12 @@ function logout() {
         </div>
 
         <nav class="flex-1 space-y-1 px-3 py-4">
-            <a
+            <SidebarItem
                 v-for="item in navigation"
                 :key="item.label"
-                :href="item.href"
-                class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
-                :class="collapsed ? 'justify-center' : ''"
-                :title="collapsed ? item.label : ''"
-            >
-                <component
-                    :is="item.icon"
-                    class="h-5 w-5 shrink-0"
-                />
-
-                <span v-if="!collapsed" class="ml-3">
-                    {{ item.label }}
-                </span>
-            </a>
+                :item="item"
+                :collapsed="collapsed"
+            />
         </nav>
 
         <div class="border-t p-3">

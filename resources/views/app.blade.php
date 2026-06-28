@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
     <title>Inventiq</title>
-    @vite(['resources/css/app.css','resources/js/app.js'])
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    @vite([
+        'resources/css/app.css',
+        'resources/js/app.js'
+    ])
+
     @inertiaHead
 </head>
 <body>
-        @inertia
+    @inertia
 </body>
 </html>

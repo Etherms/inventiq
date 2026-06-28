@@ -1,3 +1,6 @@
+<script setup>
+import { Bell } from 'lucide-vue-next'
+</script>
 <template>
     <button type="button" class="rounded-lg p-2 hover:bg-gray-100">
         <Bell class="h-5 w-5 text-gray-700" />

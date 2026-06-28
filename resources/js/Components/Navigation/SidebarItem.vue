@@ -16,7 +16,7 @@ defineProps({
 <template>
     <Link
         :href="item.href"
-        class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+        class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-[#696969] hover:bg-[#EAF6FA]"
         :class="collapsed ? 'justify-center' : ''"
         :title="collapsed ? item.label : ''"
     >

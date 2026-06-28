@@ -1,19 +1,26 @@
 <script setup>
-import { Search, Mail, Bell, UserCircle } from 'lucide-vue-next'
+import { Search } from 'lucide-vue-next'
 import MailButton from '../Notifications/MailButton.vue'
 import NotificationBell from '../Notifications/NotificationBell.vue'
+import Profile from '../Dropdowns/ProfileDropdown.vue'
 
+defineProps({
+    user: {
+        type: Object,
+        default: null,
+    },
+})
 </script>
 
 <template>
-    <header class="h-16 shrink-0 border-b bg-white px-6 flex items-center justify-between">
+    <header class="h-16 shrink-0 bg-[#EAF6FA] px-6 flex items-center justify-between">
         <div class="w-full max-w-md">
-            <div class="flex h-10 items-center rounded-lg bg-gray-100 px-3">
+            <div class="flex h-14 items-center bg-white px-3 rounded-[20px] overflow-hidden inset-shadow-md">
                 <Search class="h-4 w-4 text-gray-500" />
 
                 <input
                     type="text"
-                    placeholder="Search..."
+                    placeholder="Search"
                     class="ml-2 w-full bg-transparent text-sm outline-none"
                 >
             </div>
@@ -21,19 +28,8 @@ import NotificationBell from '../Notifications/NotificationBell.vue'
 
         <div class="flex items-center gap-4">
             <MailButton />
-
             <NotificationBell />
-            
-
-            <button type="button" class="flex items-center gap-2 rounded-lg p-1.5 hover:bg-gray-100">
-                <img
-                    src="https://ui-avatars.com/api/?name=Inventiq+User"
-                    alt="Profile"
-                    class="h-8 w-8 rounded-full"
-                >
-
-                <UserCircle class="h-5 w-5 text-gray-700" />
-            </button>
+            <Profile :user="user" />
         </div>
     </header>
 </template>

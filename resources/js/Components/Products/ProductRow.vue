@@ -1,5 +1,5 @@
 <script setup>
-import { Pencil, Trash2 } from 'lucide-vue-next'
+import { Plus, Minus, Pencil, Trash2 } from 'lucide-vue-next'
 
 defineProps({
     product: {
@@ -8,7 +8,7 @@ defineProps({
     },
 })
 
-defineEmits(['edit', 'delete'])
+defineEmits(['stock-in', 'stock-out','edit', 'delete'])
 </script>
 
 <template>
@@ -57,12 +57,30 @@ defineEmits(['edit', 'delete'])
             </span>
         </td>
 
-        <td class="px-4 py-3 text-right">
-            <div class="flex justify-end gap-3">
+            <td class="px-4 py-3 text-right">
+            <div class="flex justify-end gap-2">
+                <button
+                    type="button"
+                    @click="$emit('stock-in', product)"
+                    class="inline-flex items-center gap-1 rounded-lg bg-emerald-100 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-200"
+                >
+                    <Plus class="h-3.5 w-3.5" />
+                    In
+                </button>
+
+                <button
+                    type="button"
+                    @click="$emit('stock-out', product)"
+                    class="inline-flex items-center gap-1 rounded-lg bg-orange-100 px-3 py-1.5 text-xs font-medium text-orange-700 hover:bg-orange-200"
+                >
+                    <Minus class="h-3.5 w-3.5" />
+                    Out
+                </button>
+
                 <button
                     type="button"
                     @click="$emit('edit', product)"
-                    class="text-black hover:text-grey-400"
+                    class="rounded-lg px-2 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
                 >
                     <Pencil class="h-4 w-4" />
                 </button>
@@ -70,7 +88,7 @@ defineEmits(['edit', 'delete'])
                 <button
                     type="button"
                     @click="$emit('delete', product)"
-                    class="text-black hover:text-grey-400"
+                    class="rounded-lg px-2 py-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600"
                 >
                     <Trash2 class="h-4 w-4" />
                 </button>

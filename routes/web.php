@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/categories', fn () => Inertia::render('Categories'))->name('categories');
     Route::get('/suppliers', fn () => Inertia::render('Suppliers'))->name('suppliers');
     Route::get('/products', fn () => Inertia::render('Products'))->name('products');
+    Route::get('/stock-movement', fn () => Inertia::render('StockMovement'))->name('stock-movement');
 
     Route::post('/logout', [SessionAuthController::class, 'logout'])->name('logout');
 });

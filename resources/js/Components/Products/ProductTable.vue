@@ -49,6 +49,8 @@ defineEmits(['edit', 'delete'])
                     v-for="product in products"
                     :key="product.id"
                     :product="product"
+                    @stock-in="$emit('stock-in', $event)"
+                    @stock-out="$emit('stock-out', $event)"
                     @edit="$emit('edit', $event)"
                     @delete="$emit('delete', $event)"
                 />

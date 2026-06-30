@@ -14,6 +14,14 @@ const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const selectedProduct = ref(null)
 
+function openStockIn(product) {
+    console.log('Stock In:', product)
+}
+
+function openStockOut(product) {
+    console.log('Stock Out:', product)
+}
+
 function editProduct(product) {
     selectedProduct.value = product
     showEditModal.value = true
@@ -88,6 +96,8 @@ onMounted(() => {
                 <ProductTable
                     :products="products"
                     :loading="loading"
+                    @stock-in="openStockIn"
+                    @stock-out="openStockOut"
                     @edit="editProduct"
                     @delete="deleteProduct" />
             </div>

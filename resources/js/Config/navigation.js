@@ -20,6 +20,11 @@ export const navigation = [
         icon: Package,
     },
     {
+        label: "Stock Movement",
+        href: "/stock-movement",
+        icon: FileText,
+    },
+    {
         label: "Super Admin",
         href: "/admin",
         icon: Shield,
@@ -38,11 +43,6 @@ export const navigation = [
         label: "Layouts",
         href: "/layouts",
         icon: LayoutTemplate,
-    },
-    {
-        label: "Inventory Report",
-        href: "/reports",
-        icon: FileText,
     },
 
 ]

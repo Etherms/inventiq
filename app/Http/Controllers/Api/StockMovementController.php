@@ -48,7 +48,7 @@ class StockMovementController extends Controller
 
             StockMovement::create([
                 'product_id'     => $product->id,
-                'user_id'        => $request->user()->id,
+                'user_id'        => auth()->id(),
                 'type'           => 'in',
                 'quantity'       => $validated['quantity'],
                 'previous_stock' => $previousStock,
@@ -93,7 +93,7 @@ class StockMovementController extends Controller
 
             StockMovement::create([
                 'product_id'     => $product->id,
-                'user_id'        => $request->user()->id,
+                'user_id'        => auth()->id(),
                 'type'           => 'out',
                 'quantity'       => $validated['quantity'],
                 'previous_stock' => $previousStock,

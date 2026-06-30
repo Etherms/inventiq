@@ -5,7 +5,6 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\SupplierController;
-use App\Http\Controllers\Api\StockMovementController;
 
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -20,7 +19,3 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('suppliers', SupplierController::class);
 Route::apiResource('products', ProductController::class);
-Route::get('/stock-movements', [StockMovementController::class, 'index']);
-Route::post('/stock-in', [StockMovementController::class, 'stockIn']);
-Route::post('/stock-out', [StockMovementController::class, 'stockOut']);
-Route::get('/products/{product}/history', [StockMovementController::class, 'history']);

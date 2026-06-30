@@ -5,6 +5,8 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import ProductTable from '../Components/Products/ProductTable.vue'
 import CreateProduct from '../Components/Products/CreateProduct.vue'
+import EditProduct from '../Components/Products/EditProduct.vue'
+
 
 const loading = ref(false)
 const products = ref([])
@@ -94,5 +96,11 @@ onMounted(() => {
             :show="showCreateModal"
             @close="showCreateModal = false"
             @created="fetchProducts"/>
+       <EditProduct
+            :show="showEditModal"
+            :product="selectedProduct"
+            @close="showEditModal = false"
+            @updated="fetchProducts"
+        />
     </AppLayout>
 </template>

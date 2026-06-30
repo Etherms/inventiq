@@ -17,6 +17,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', fn () => Inertia::render('Dashboard'))->name('dashboard');
     Route::get('/categories', fn () => Inertia::render('Categories'))->name('categories');
+    Route::get('/suppliers', fn () => Inertia::render('Suppliers'))->name('suppliers');
 
     Route::post('/logout', [SessionAuthController::class, 'logout'])->name('logout');
 });

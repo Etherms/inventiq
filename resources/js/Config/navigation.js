@@ -5,6 +5,7 @@ import {
     Package,
     LayoutTemplate,
     AppWindow,
+    Building2,
 } from 'lucide-vue-next'
 
 export const navigation = [
@@ -22,6 +23,11 @@ export const navigation = [
         label: "Categories",
         href: "/categories",
         icon: AppWindow,
+    },
+    {
+        label: "Suppliers",
+        href: "/suppliers",
+        icon: Building2,
     },
     {
         label: "Layouts",

@@ -3,42 +3,43 @@ import AppLayout from '../Layouts/AppLayout.vue'
 import { Search } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
-import CategoryTable from '../Components/Categories/CategoryTable.vue'
-import CreateCategory from '../Components/Categories/CreateCategory.vue'
-import EditCategory from '../Components/Categories/EditCategory.vue'
+import SupplierTable from '../Components/Suppliers/SupplierTable.vue'
+import CreateSupplier from '../Components/Suppliers/CreateSupplier.vue'
+import EditSupplier from '../Components/Suppliers/EditSupplier.vue'
 
-const categories = ref([])
+const suppliers = ref([])
 const loading = ref(false)
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
-const selectedCategory = ref(null)
+const selectedSupplier = ref(null)
 
-function editCategory(category) {
-    selectedCategory.value = category
+function editSupplier(supplier) {
+    selectedSupplier.value = supplier
     showEditModal.value = true
 }
 
-async function deleteCategory(category) {
-    if (!confirm(`Delete ${category.name}?`)) return
+async function deleteSupplier(supplier) {
+    if (!confirm(`Delete ${supplier.name}?`)) return
 
-    await axios.delete(`/api/categories/${category.id}`)
-    fetchCategories()
+    await axios.delete(`/api/suppliers/${supplier.id}`)
+    fetchSuppliers()
 }
 
-async function fetchCategories() {
+async function fetchSuppliers() {
     loading.value = true
     try {
-        const res = await axios.get('/api/categories')
-        categories.value = res.data.data
+        const res = await axios.get('/api/suppliers')
+        suppliers.value = res.data.data
     } catch (error) {
-        console.error('Error fetching categories:', error)
+        console.error('Error fetching suppliers:', error)
     } finally {
         loading.value = false
     }
 }
 
+
 onMounted(() => {
-    fetchCategories()
+    fetchSuppliers()
 })
 </script>
 
@@ -48,7 +49,7 @@ onMounted(() => {
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900">
-                        Categories
+                        Suppliers
                     </h1>
                 </div>
 
@@ -57,7 +58,7 @@ onMounted(() => {
                     @click="showCreateModal = true"
                     class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
                 >
-                    + Create Category
+                    + Create Supplier
                 </button>
             </div>
 
@@ -65,30 +66,28 @@ onMounted(() => {
                 <Search class="h-4 w-4 text-gray-500" />
                 <input
                     type="text"
-                    placeholder="Search categories..."
+                    placeholder="Search suppliers..."
                     class="w-full rounded-lg pr-6 ml-2 text-sm outline-none"
                 >
             </div>
 
             <div class="overflow-hidden rounded-xl bg-white shadow-sm">
-                <CategoryTable
-                    :categories="categories"
+                <SupplierTable
+                    :suppliers="suppliers"
                     :loading="loading"
-                    @edit="editCategory"
-                    @delete="deleteCategory"
-                />
+                    @edit="editSupplier"
+                    @delete="deleteSupplier" />
             </div>
         </div>
-        <CreateCategory
+        <CreateSupplier
             :show="showCreateModal"
             @close="showCreateModal = false"
-            @created="fetchCategories"
-        />
-        <EditCategory
+            @created="fetchSuppliers"/>
+        <EditSupplier
             :show="showEditModal"
-            :category="selectedCategory"
+            :supplier="selectedSupplier"
             @close="showEditModal = false"
-            @updated="fetchCategories"
+            @updated="fetchSuppliers"
         />
     </AppLayout>
 </template>

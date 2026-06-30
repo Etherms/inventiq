@@ -1,8 +1,8 @@
 <script setup>
-import CategoryRow from './CategoryRow.vue'
+import SupplierRow from './SupplierRow.vue'
 
 defineProps({
-    categories: {
+    suppliers: {
         type: Array,
         default: () => []
     },
@@ -20,28 +20,30 @@ defineProps({
             <thead class="border-b bg-gray-50 text-gray-600">
                 <tr>
                     <th class="px-4 py-3">Name</th>
-                    <th class="px-4 py-3">Description</th>
+                    <th class="px-4 py-3">Contact Person</th>
+                    <th class="px-4 py-3">Email</th>
+                    <th class="px-4 py-3">Phone</th>
+                    <th class="px-4 py-3">Address</th>
                     <th class="px-4 py-3 text-right">Actions</th>
                 </tr>
             </thead>
-
             <tbody>
                 <tr v-if="loading">
                     <td colspan="3" class="px-4 py-6 text-center text-gray-500">
-                        Loading categories...
+                        Loading Suppliers...
                     </td>
                 </tr>
 
-                <tr v-else-if="categories.length === 0">
+                <tr v-else-if="suppliers.length === 0">
                     <td colspan="3" class="px-4 py-6 text-center text-gray-500">
-                        No categories found.
+                        No suppliers found.
                     </td>
                 </tr>
 
-                <CategoryRow
-                    v-for="category in categories"
-                    :key="category.id"
-                    :category="category"
+                <SupplierRow
+                    v-for="supplier in suppliers"
+                    :key="supplier.id"
+                    :supplier="supplier"
                     @edit="$emit('edit', $event)"
                     @delete="$emit('delete', $event)"
                 />

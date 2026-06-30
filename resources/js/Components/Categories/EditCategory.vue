@@ -41,7 +41,7 @@ async function submit() {
     error.value = ''
 
     try {
-        const res = await axios.put(`/categories/${props.category.id}`, form.value)
+        const res = await axios.put(`api/categories/${props.category.id}`, form.value)
 
         emit('updated', res.data.data)
         emit('close')

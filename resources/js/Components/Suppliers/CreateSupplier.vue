@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
-import CategoryModal from './CategoryModal.vue'
+import SupplierModal from './SupplierModal.vue'
 
 defineProps({
     show: Boolean,
@@ -11,7 +11,10 @@ const emit = defineEmits(['close', 'created'])
 
 const form = ref({
     name: '',
-    description: '',
+    contact_person: '',
+    email: '',
+    phone: '',
+    address: '',
 })
 
 const loading = ref(false)
@@ -22,17 +25,20 @@ async function submit() {
     error.value = ''
 
     try {
-        const res = await axios.post('api/categories', form.value)
+        const res = await axios.post('/api/suppliers', form.value)
 
         emit('created', res.data.data)
         emit('close')
 
         form.value = {
             name: '',
-            description: '',
+            contact_person: '',
+            email: '',
+            phone: '',
+            address: '',
         }
     } catch (e) {
-        error.value = e.response?.data?.message || 'Failed to create category.'
+        error.value = e.response?.data?.message || 'Failed to create supplier.'
     } finally {
         loading.value = false
     }
@@ -40,9 +46,9 @@ async function submit() {
 </script>
 
 <template>
-    <CategoryModal
+    <SupplierModal
         :show="show"
-        title="Create Category"
+        title="Create Supplier"
         @close="emit('close')"
     >
         <form @submit.prevent="submit" class="space-y-4">
@@ -61,16 +67,50 @@ async function submit() {
                     required
                 >
             </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-gray-700">
+                    Contact Person
+                </label>
+                <input
+                    v-model="form.contact_person"
+                    type="text"
+                    class="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                    required
+                >
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-gray-700">
+                    Email
+                </label>
+                <input
+                    v-model="form.email"
+                    type="email"
+                    class="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                    required
+                >
+            </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-gray-700">
+                    Phone
+                </label>
+                <input
+                    v-model="form.phone"
+                    type="text"
+                    class="w-full rounded-lg border px-3 py-2 text-sm outline-none"
+                    required
+                >
+            </div>
 
             <div>
                 <label class="mb-1 block text-sm font-medium text-gray-700">
-                    Description
+                    Address
                 </label>
-                <textarea
-                    v-model="form.description"
+                <input
+                    v-model="form.address"
+                    type="text"
                     class="w-full rounded-lg border px-3 py-2 text-sm outline-none"
-                    rows="3"
-                ></textarea>
+                    required
+                >
             </div>
 
             <div class="flex justify-end gap-3 pt-2">
@@ -91,5 +131,5 @@ async function submit() {
                 </button>
             </div>
         </form>
-    </CategoryModal>
+    </SupplierModal>
 </template>

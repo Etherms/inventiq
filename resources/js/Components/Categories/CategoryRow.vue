@@ -20,11 +20,20 @@ const props = defineProps({
         </td>
 
         <td class="px-4 py-3 text-right">
-            <button 
-                @click="$emit('edit', category)"
-                class="text-sm text-blue-600 hover:underline">
-                Edit
-            </button>
+            <div class="flex justify-end gap-3">
+                <button
+                    @click="$emit('edit', category)"
+                    class="text-sm text-blue-600 hover:underline">
+                    Edit
+                </button>
+                                <button
+                        type="button"
+                        @click="$emit('delete', category)"
+                        class="text-sm text-red-600 hover:underline"
+                    >
+                    Delete
+                </button>
+            </div>
         </td>
     </tr>
 </template>

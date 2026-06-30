@@ -14,6 +14,11 @@ export const navigation = [
         href: "/dashboard",
         icon: LayoutDashboard,
     },
+        {
+        label: "Products",
+        href: "/products",
+        icon: Package,
+    },
     {
         label: "Super Admin",
         href: "/admin",
@@ -39,9 +44,5 @@ export const navigation = [
         href: "/reports",
         icon: FileText,
     },
-    {
-        label: "Products",
-        href: "/products",
-        icon: Package,
-    },
+
 ]

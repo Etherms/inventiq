@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\StockMovement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class StockMovementController extends Controller
 {
@@ -121,5 +122,51 @@ class StockMovementController extends Controller
                 ->latest()
                 ->get(),
         ]);
+    }
+
+    public function statistics()
+    {
+        $thisWeekStart = now()->startOfWeek();
+        $lastWeekStart = now()->subWeek()->startOfWeek();
+        $lastWeekEnd = now()->subWeek()->endOfWeek();
+
+        $totalMovements = StockMovement::count();
+        $stockIn = StockMovement::where('type', 'in')->count();
+        $stockOut = StockMovement::where('type', 'out')->count();
+        $todayMovements = StockMovement::whereDate('created_at', today())->count();
+
+        $thisWeekTotal = StockMovement::whereBetween('created_at', [$thisWeekStart, now()])->count();
+        $lastWeekTotal = StockMovement::whereBetween('created_at', [$lastWeekStart, $lastWeekEnd])->count();
+
+        $thisWeekIn = StockMovement::where('type', 'in')->whereBetween('created_at', [$thisWeekStart, now()])->count();
+        $lastWeekIn = StockMovement::where('type', 'in')->whereBetween('created_at', [$lastWeekStart, $lastWeekEnd])->count();
+
+        $thisWeekOut = StockMovement::where('type', 'out')->whereBetween('created_at', [$thisWeekStart, now()])->count();
+        $lastWeekOut = StockMovement::where('type', 'out')->whereBetween('created_at', [$lastWeekStart, $lastWeekEnd])->count();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'totalMovements' => $totalMovements,
+                'stockIn' => $stockIn,
+                'stockOut' => $stockOut,
+                'todayMovements' => $todayMovements,
+                'changes' => [
+                    'totalMovements' => $this->percentChange($thisWeekTotal, $lastWeekTotal),
+                    'stockIn' => $this->percentChange($thisWeekIn, $lastWeekIn),
+                    'stockOut' => $this->percentChange($thisWeekOut, $lastWeekOut),
+                    'todayMovements' => 0,
+                ],
+            ],
+        ]);
+    }
+
+    private function percentChange($current, $previous): float
+    {
+        if ($previous == 0) {
+            return $current > 0 ? 100 : 0;
+        }
+
+        return round((($current - $previous) / $previous) * 100, 1);
     }
 }

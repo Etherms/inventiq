@@ -28,4 +28,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/stock-in', [StockMovementController::class, 'stockIn']);
     Route::post('/stock-out', [StockMovementController::class, 'stockOut']);
     Route::get('/products/{product}/history', [StockMovementController::class, 'history']);
+    Route::get('/stock-movements/statistics', [StockMovementController::class, 'statistics']);
 });

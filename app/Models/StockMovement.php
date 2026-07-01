@@ -17,7 +17,7 @@ class StockMovement extends Model
         'notes',
     ];
 
-    public function products()
+    public function product()
     {
         return $this->belongsTo(Product::class);
     }

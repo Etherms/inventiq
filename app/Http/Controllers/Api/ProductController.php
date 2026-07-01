@@ -10,12 +10,12 @@ class ProductController extends Controller
 {
     public function index()
     {
-        return response()->json([
-            'success' => true,
-            'data' => Product::with(['category', 'supplier'])->latest()->get(),
-        ]);
+        return response()->json(
+            Product::with(['category', 'supplier'])
+                ->latest()
+                ->paginate(8)
+        );
     }
-
     public function store(Request $request)
     {
         $validated = $request->validate([

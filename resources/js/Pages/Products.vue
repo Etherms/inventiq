@@ -12,6 +12,7 @@ import StockOutModal from '../Components/StockMovement/StockOutModal.vue'
 
 const loading = ref(false)
 const products = ref([])
+const pagination = ref({})
 
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
@@ -87,14 +88,16 @@ async function handleProductUpdated() {
     showSuccess('Product updated successfully.')
 }
 
-async function fetchProducts() {
+async function fetchProducts(page = 1) {
     loading.value = true
 
     try {
-        const res = await axios.get('/api/products')
+        const res = await axios.get(`/api/products?page=${page}`)
+
         products.value = res.data.data
+        pagination.value = res.data
     } catch (error) {
-        console.error('Error fetching products:', error)
+        console.error(error)
     } finally {
         loading.value = false
     }
@@ -154,6 +157,8 @@ onMounted(() => {
                 <ProductTable
                     :products="products"
                     :loading="loading"
+                    :pagination="pagination"
+                    @page-change="fetchProducts"
                     @stock-in="openStockIn"
                     @stock-out="openStockOut"
                     @edit="editProduct"

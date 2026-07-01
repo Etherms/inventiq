@@ -7,7 +7,13 @@ defineProps({
         type: Object,
         required: true,
     },
+    activeFilter: {
+        type: String,
+        default: 'all',
+    },
 })
+
+defineEmits(['filter'])
 </script>
 
 <template>
@@ -19,7 +25,8 @@ defineProps({
             :value="stats[stat.valueKey] ?? 0"
             :description="stat.description"
             :icon="stat.icon"
-            :href="stat.href"
+            :active="activeFilter === stat.filter"
+            @click="$emit('filter', stat.filter)"
         />
     </div>
 </template>

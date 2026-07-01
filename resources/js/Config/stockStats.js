@@ -1,36 +1,41 @@
-import { Package, ArrowDownToLine, ArrowUpFromLine, CalendarDays } from 'lucide-vue-next'
+import {
+    ArrowsRightLeftIcon,
+    ArrowDownTrayIcon,
+    ArrowUpTrayIcon,
+    CalendarDaysIcon,
+} from '@heroicons/vue/24/outline'
 
 export const stockStats = [
     {
         key: 'totalMovements',
         label: 'Total Movements',
         valueKey: 'totalMovements',
-        description: 'All recorded transactions',
-        icon: Package,
-        href: '/stock-movement',
+        description: 'All stock transactions',
+        filter: 'all',
+        icon: ArrowsRightLeftIcon,
     },
     {
         key: 'stockIn',
         label: 'Stock In',
         valueKey: 'stockIn',
-        description: 'Items added to inventory',
-        icon: ArrowDownToLine,
-        href: '/stock-movement?type=in',
+        description: 'Incoming stock transactions',
+        filter: 'in',
+        icon: ArrowDownTrayIcon,
     },
     {
         key: 'stockOut',
         label: 'Stock Out',
         valueKey: 'stockOut',
-        description: 'Items deducted from inventory',
-        icon: ArrowUpFromLine,
-        href: '/stock-movement?type=out',
+        description: 'Outgoing stock transactions',
+        filter: 'out',
+        icon: ArrowUpTrayIcon,
     },
     {
         key: 'todayMovements',
         label: "Today's Movements",
         valueKey: 'todayMovements',
-        description: 'Transactions recorded today',
-        icon: CalendarDays,
-        href: '/stock-movement?date=today',
+        description: 'Transactions created today',
+        filter: 'today',
+        icon: CalendarDaysIcon,
     },
 ]

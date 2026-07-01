@@ -22,6 +22,20 @@ const showStockOutModal = ref(false)
 const selectedProduct = ref(null)
 const success = ref('')
 
+const sortBy = ref('created_at')
+const sortDirection = ref('desc')
+
+function sortProducts(column) {
+    if (sortBy.value === column) {
+        sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+    } else {
+        sortBy.value = column
+        sortDirection.value = 'asc'
+    }
+
+    fetchProducts(1)
+}
+
 function showSuccess(message) {
     success.value = message
 
@@ -92,7 +106,13 @@ async function fetchProducts(page = 1) {
     loading.value = true
 
     try {
-        const res = await axios.get(`/api/products?page=${page}`)
+        const res = await axios.get('/api/products', {
+            params: {
+                page,
+                sort_by: sortBy.value,
+                sort_direction: sortDirection.value,
+            },
+        })
 
         products.value = res.data.data
         pagination.value = res.data
@@ -158,6 +178,9 @@ onMounted(() => {
                     :products="products"
                     :loading="loading"
                     :pagination="pagination"
+                    :sort-by="sortBy"
+                    :sort-direction="sortDirection"
+                    @sort="sortProducts"
                     @page-change="fetchProducts"
                     @stock-in="openStockIn"
                     @stock-out="openStockOut"

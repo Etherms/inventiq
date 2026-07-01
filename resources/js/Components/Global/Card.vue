@@ -1,6 +1,4 @@
 <script setup>
-import { Link } from '@inertiajs/vue3'
-
 defineProps({
     label: String,
     value: {
@@ -15,18 +13,18 @@ defineProps({
         type: [Object, Function],
         default: null,
     },
-    href: {
-        type: String,
-        default: null,
+    active: {
+        type: Boolean,
+        default: false,
     },
 })
 </script>
 
 <template>
-    <component
-        :is="href ? Link : 'div'"
-        :href="href || undefined"
-        class="block rounded-xl bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+    <button
+        type="button"
+        class="block w-full rounded-xl bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        :class="active ? 'ring-2 ring-gray-900' : ''"
     >
         <div class="flex items-center justify-between">
             <div>
@@ -49,5 +47,5 @@ defineProps({
                 />
             </div>
         </div>
-    </component>
+    </button>
 </template>

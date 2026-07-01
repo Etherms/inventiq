@@ -11,19 +11,71 @@ use Carbon\Carbon;
 
 class StockMovementController extends Controller
 {
-    /**
-     * List all stock movements.
-     */
-    public function index()
+        /**
+         * List all stock movements.
+         */
+    public function index(Request $request)
     {
-        return response()->json([
-            'success' => true,
-            'data' => StockMovement::with(['product', 'user'])
-                ->latest()
-                ->get(),
-        ]);
-    }
+        $allowedSorts = [
+            'created_at',
+            'type',
+            'quantity',
+            'previous_stock',
+            'new_stock',
+            'ref_number',
+        ];
 
+        $sortBy = in_array($request->get('sort_by'), $allowedSorts)
+            ? $request->get('sort_by')
+            : 'created_at';
+
+        $sortDirection = $request->get('sort_direction') === 'asc'
+            ? 'asc'
+            : 'desc';
+
+        $perPage = $request->get('per_page', 8);
+
+        $query = StockMovement::with(['product', 'user']);
+
+        if ($request->filter === 'in' || $request->type === 'in') {
+            $query->where('type', 'in');
+        }
+
+        if ($request->filter === 'out' || $request->type === 'out') {
+            $query->where('type', 'out');
+        }
+
+        if ($request->filter === 'today') {
+            $query->whereDate('created_at', today());
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('ref_number', 'like', "%{$search}%")
+                    ->orWhereHas('product', function ($productQuery) use ($search) {
+                        $productQuery->where('name', 'like', "%{$search}%")
+                            ->orWhere('sku', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        return response()->json(
+            $query
+                ->orderBy($sortBy, $sortDirection)
+                ->paginate($perPage)
+                ->withQueryString()
+        );
+    }
     /**
      * Stock In
      */
@@ -168,5 +220,96 @@ class StockMovementController extends Controller
         }
 
         return round((($current - $previous) / $previous) * 100, 1);
+    }
+
+    public function export(Request $request)
+    {
+        $query = StockMovement::with(['product', 'user']);
+
+        if ($request->filter === 'in' || $request->type === 'in') {
+            $query->where('type', 'in');
+        }
+
+        if ($request->filter === 'out' || $request->type === 'out') {
+            $query->where('type', 'out');
+        }
+
+        if ($request->filter === 'today') {
+            $query->whereDate('created_at', today());
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('ref_number', 'like', "%{$search}%")
+                    ->orWhereHas('product', function ($productQuery) use ($search) {
+                        $productQuery->where('name', 'like', "%{$search}%")
+                            ->orWhere('sku', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $movements = $query->latest()->get();
+
+        $fileName = 'stock-movements-' . now()->format('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename={$fileName}",
+        ];
+
+        return response()->stream(function () use ($movements) {
+            $file = fopen('php://output', 'w');
+
+            fputcsv($file, [
+                'Date',
+                'Product',
+                'SKU',
+                'Type',
+                'Quantity',
+                'Previous Stock',
+                'New Stock',
+                'Reference Number',
+                'User',
+                'Notes',
+            ]);
+
+            foreach ($movements as $movement) {
+                fputcsv($file, [
+                    $movement->created_at?->format('Y-m-d H:i:s'),
+                    $movement->product?->name,
+                    $movement->product?->sku,
+                    strtoupper($movement->type),
+                    $movement->quantity,
+                    $movement->previous_stock,
+                    $movement->new_stock,
+                    $movement->ref_number,
+                    $movement->user?->name,
+                    $movement->notes,
+                ]);
+            }
+
+            fclose($file);
+        }, 200, $headers);
+    }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'CSV import endpoint is ready. Import logic can be added next.',
+        ]);
     }
 }

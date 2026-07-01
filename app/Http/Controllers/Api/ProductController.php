@@ -8,11 +8,28 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $allowedSorts = [
+            'name',
+            'selling_price',
+            'stock',
+            'supplier_id',
+            'status',
+            'created_at',
+        ];
+
+        $sortBy = in_array($request->get('sort_by'), $allowedSorts)
+            ? $request->get('sort_by')
+            : 'created_at';
+
+        $sortDirection = $request->get('sort_direction') === 'asc'
+            ? 'asc'
+            : 'desc';
+
         return response()->json(
             Product::with(['category', 'supplier'])
-                ->latest()
+                ->orderBy($sortBy, $sortDirection)
                 ->paginate(8)
         );
     }

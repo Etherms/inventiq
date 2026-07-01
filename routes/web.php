@@ -29,4 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/stock-out', [StockMovementController::class, 'stockOut']);
     Route::get('/products/{product}/history', [StockMovementController::class, 'history']);
     Route::get('/stock-movements/statistics', [StockMovementController::class, 'statistics']);
+    Route::get('/stock-movements/list', [StockMovementController::class, 'index']);
+    Route::get('/stock-movements/export', [StockMovementController::class, 'export']);
+    Route::post('/stock-movements/import', [StockMovementController::class, 'import']);
+    Route::get('/stock-movements/statistics', [StockMovementController::class, 'statistics']);
 });

@@ -1,5 +1,7 @@
 <script setup>
 import StockMovementRow from './StockMovementRow.vue'
+import HeaderRowFilter from '../Global/HeaderRowFilter.vue'
+import TablePagination from '../Global/TablePagination.vue'
 
 defineProps({
     movements: {
@@ -10,26 +12,43 @@ defineProps({
         type: Boolean,
         default: false,
     },
+    pagination: {
+        type: Object,
+        default: () => ({}),
+    },
+    sortBy: {
+        type: String,
+        default: '',
+    },
+    sortDirection: {
+        type: String,
+        default: 'asc',
+    },
 })
 
-defineEmits(['view'])
+defineEmits(['view', 'page-change', 'sort'])
+
+const columns = [
+    { key: 'created_at', label: 'Date', sortable: true },
+    { key: 'product', label: 'Product', sortable: false },
+    { key: 'type', label: 'Type', sortable: true },
+    { key: 'quantity', label: 'Quantity', sortable: true },
+    { key: 'previous_stock', label: 'Previous', sortable: true },
+    { key: 'new_stock', label: 'New', sortable: true },
+    { key: 'user', label: 'User', sortable: false },
+    { key: 'ref_number', label: 'Reference', sortable: true },
+]
 </script>
 
 <template>
     <div class="overflow-hidden rounded-xl bg-white shadow-sm">
         <table class="w-full text-left text-sm">
-            <thead class="border-b bg-gray-50 text-gray-600">
-                <tr>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Type</th>
-                    <th class="px-4 py-3">Quantity</th>
-                    <th class="px-4 py-3">Previous</th>
-                    <th class="px-4 py-3">New</th>
-                    <th class="px-4 py-3">User</th>
-                    <th class="px-4 py-3">Reference</th>
-                </tr>
-            </thead>
+            <HeaderRowFilter
+                :columns="columns"
+                :sort-by="sortBy"
+                :sort-direction="sortDirection"
+                @sort="$emit('sort', $event)"
+            />
 
             <tbody>
                 <tr v-if="loading">
@@ -52,5 +71,10 @@ defineEmits(['view'])
                 />
             </tbody>
         </table>
+
+        <TablePagination
+            :pagination="pagination"
+            @page-change="$emit('page-change', $event)"
+        />
     </div>
 </template>

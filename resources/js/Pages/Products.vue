@@ -1,131 +1,44 @@
 <script setup>
 import AppLayout from '../Layouts/AppLayout.vue'
-import { Search } from 'lucide-vue-next'
-import { onMounted, ref } from 'vue'
-import axios from 'axios'
-
-import ProductTable from '../Components/Products/ProductTable.vue'
+import DataTable from '../Components/Global/DataTable.vue'
 import CreateProduct from '../Components/Products/CreateProduct.vue'
 import EditProduct from '../Components/Products/EditProduct.vue'
 import StockInModal from '../Components/StockMovement/StockInModal.vue'
 import StockOutModal from '../Components/StockMovement/StockOutModal.vue'
 
-const loading = ref(false)
-const products = ref([])
-const pagination = ref({})
+import { Search, Pencil, Trash2, Plus, Minus, Upload, Download } from 'lucide-vue-next'
+import { useProducts } from '../Composables/Products/useProducts.js'
 
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
-const showStockInModal = ref(false)
-const showStockOutModal = ref(false)
+const {
+    loading,
+    products,
+    pagination,
+    fileInput,
+    search,
+    sortBy,
+    sortDirection,
+    selectedProduct,
+    success,
+    showCreateModal,
+    showEditModal,
+    showStockInModal,
+    showStockOutModal,
+    columns,
 
-const selectedProduct = ref(null)
-const success = ref('')
-
-const sortBy = ref('created_at')
-const sortDirection = ref('desc')
-
-function sortProducts(column) {
-    if (sortBy.value === column) {
-        sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
-    } else {
-        sortBy.value = column
-        sortDirection.value = 'asc'
-    }
-
-    fetchProducts(1)
-}
-
-function showSuccess(message) {
-    success.value = message
-
-    setTimeout(() => {
-        success.value = ''
-    }, 3000)
-}
-
-function openStockIn(product) {
-    selectedProduct.value = product
-    showStockInModal.value = true
-}
-
-function openStockOut(product) {
-    selectedProduct.value = product
-    showStockOutModal.value = true
-}
-
-function editProduct(product) {
-    selectedProduct.value = product
-    showEditModal.value = true
-}
-
-async function deleteProduct(product) {
-    if (!confirm(`Delete ${product.name}?`)) return
-
-    try {
-        await axios.delete(`/api/products/${product.id}`)
-        await fetchProducts()
-        showSuccess('Product deleted successfully.')
-    } catch (error) {
-        console.error('Error deleting product:', error)
-    }
-}
-
-async function handleStockInSaved() {
-    showStockInModal.value = false
-    selectedProduct.value = null
-
-    await fetchProducts()
-    showSuccess('Stock added successfully.')
-}
-
-async function handleStockOutSaved() {
-    showStockOutModal.value = false
-    selectedProduct.value = null
-
-    await fetchProducts()
-    showSuccess('Stock deducted successfully.')
-}
-
-async function handleProductCreated() {
-    showCreateModal.value = false
-
-    await fetchProducts()
-    showSuccess('Product created successfully.')
-}
-
-async function handleProductUpdated() {
-    showEditModal.value = false
-    selectedProduct.value = null
-
-    await fetchProducts()
-    showSuccess('Product updated successfully.')
-}
-
-async function fetchProducts(page = 1) {
-    loading.value = true
-
-    try {
-        const res = await axios.get('/api/products', {
-            params: {
-                page,
-                sort_by: sortBy.value,
-                sort_direction: sortDirection.value,
-            },
-        })
-
-        products.value = res.data.data
-        pagination.value = res.data
-    } catch (error) {
-        console.error(error)
-    } finally {
-        loading.value = false
-    }
-}
-
-onMounted(() => {
-    fetchProducts()
-})
+    fetchProducts,
+    sortProducts,
+    openStockIn,
+    openStockOut,
+    editProduct,
+    deleteProduct,
+    exportProducts,
+    openImport,
+    importProducts,
+    handleStockInSaved,
+    handleStockOutSaved,
+    handleProductCreated,
+    handleProductUpdated,
+} = useProducts()
 </script>
 
 <template>
@@ -145,48 +58,125 @@ onMounted(() => {
                     </h1>
                 </div>
 
-                <div class="flex gap-2">
-                    <button
-                        type="button"
-                        @click="showCreateModal = true"
-                        class="rounded-lg bg-white px-4 py-2 text-sm font-medium text-black hover:bg-[#ededed] outline-1"
+                <div class="flex flex-wrap gap-2">
+                    <input
+                        ref="fileInput"
+                        type="file"
+                        accept=".csv"
+                        class="hidden"
+                        @change="importProducts"
                     >
-                        + Create Product
+
+                    <button
+                        @click="openImport"
+                        class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                        <Upload class="h-4 w-4" />
+                        Import
                     </button>
 
                     <button
-                        type="button"
+                        @click="exportProducts"
+                        class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                        <Download class="h-4 w-4" />
+                        Export
+                    </button>
+
+                    <button
+                        @click="showCreateModal = true"
                         class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
                     >
-                        + Import Product
+                        + Create Product
                     </button>
                 </div>
             </div>
 
-            <div class="rounded-xl bg-white shadow-sm flex py-5 pl-4">
+            <div class="flex items-center rounded-xl bg-white px-4 py-4 shadow-sm">
                 <Search class="h-4 w-4 text-gray-500" />
 
                 <input
+                    v-model="search"
                     type="text"
                     placeholder="Search products..."
-                    class="w-full rounded-lg pr-6 ml-2 text-sm outline-none"
+                    class="ml-2 w-full text-sm outline-none"
                 >
             </div>
 
             <div class="overflow-hidden rounded-xl bg-white shadow-sm">
-                <ProductTable
-                    :products="products"
+                <DataTable
+                    :rows="products"
+                    :columns="columns"
                     :loading="loading"
                     :pagination="pagination"
                     :sort-by="sortBy"
                     :sort-direction="sortDirection"
+                    loading-message="Loading products..."
+                    empty-message="No products found."
                     @sort="sortProducts"
                     @page-change="fetchProducts"
-                    @stock-in="openStockIn"
-                    @stock-out="openStockOut"
-                    @edit="editProduct"
-                    @delete="deleteProduct"
-                />
+                >
+                    <template #cell-selling_price="{ value }">
+                        ₱{{ Number(value).toFixed(2) }}
+                    </template>
+
+                    <template #cell-supplier="{ row }">
+                        {{ row.supplier?.name || 'No supplier' }}
+                    </template>
+
+                    <template #cell-category="{ row }">
+                        {{ row.category?.name || 'No category' }}
+                    </template>
+
+                    <template #cell-status="{ row }">
+                        <span
+                            class="rounded-full px-2 py-1 text-xs font-medium"
+                            :class="row.status ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+                        >
+                            {{ row.status ? 'Available' : 'Unavailable' }}
+                        </span>
+                    </template>
+
+                    <template #cell-actions="{ row }">
+                        <div class="flex justify-end gap-2">
+                            <button
+                                type="button"
+                                @click="openStockIn(row)"
+                                class="rounded-lg border p-2 text-green-600 hover:bg-green-50"
+                                title="Stock In"
+                            >
+                                <Plus class="h-4 w-4" />
+                            </button>
+
+                            <button
+                                type="button"
+                                @click="openStockOut(row)"
+                                class="rounded-lg border p-2 text-orange-600 hover:bg-orange-50"
+                                title="Stock Out"
+                            >
+                                <Minus class="h-4 w-4" />
+                            </button>
+
+                            <button
+                                type="button"
+                                @click="editProduct(row)"
+                                class="rounded-lg border p-2 text-gray-600 hover:bg-gray-100"
+                                title="Edit"
+                            >
+                                <Pencil class="h-4 w-4" />
+                            </button>
+
+                            <button
+                                type="button"
+                                @click="deleteProduct(row)"
+                                class="rounded-lg border p-2 text-red-600 hover:bg-red-50"
+                                title="Delete"
+                            >
+                                <Trash2 class="h-4 w-4" />
+                            </button>
+                        </div>
+                    </template>
+                </DataTable>
             </div>
         </div>
 

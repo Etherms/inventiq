@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Supplier;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
@@ -22,6 +23,23 @@ class ImportExportController extends Controller
             'filename' => 'suppliers.csv',
             'columns' => ['name', 'contact_person', 'email', 'phone', 'address'],
             'unique' => 'email',
+        ],
+        'products' => [
+            'model' => Product::class,
+            'filename' => 'products.csv',
+            'columns' => [
+                'sku',
+                'name',
+                'description',
+                'category_id',
+                'supplier_id',
+                'cost_price',
+                'selling_price',
+                'stock',
+                'reorder_level',
+                'status',
+            ],
+            'unique' => 'sku',
         ],
     ];
 

@@ -40,9 +40,11 @@ class SupplierController extends Controller
             $sortBy = 'created_at';
         }
 
+        $perPage = $request->get('per_page', 8);
+
         $suppliers = $query
             ->orderBy($sortBy, $sortDirection)
-            ->paginate(8);
+            ->paginate($perPage);
 
         return response()->json([
             'success' => true,

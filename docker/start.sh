@@ -1,9 +1,19 @@
 #!/bin/sh
+set -e
+
+echo "Starting Laravel deployment..."
+
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
 
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+echo "Starting PHP-FPM..."
 php-fpm -D
 
+echo "Starting Nginx..."
 nginx -g "daemon off;"

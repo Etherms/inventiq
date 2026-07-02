@@ -10,6 +10,24 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
+        $query = Product::with(['category', 'supplier']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                        $categoryQuery->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('supplier', function ($supplierQuery) use ($search) {
+                        $supplierQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
         $allowedSorts = [
             'name',
             'selling_price',
@@ -19,19 +37,33 @@ class ProductController extends Controller
             'created_at',
         ];
 
-        $sortBy = in_array($request->get('sort_by'), $allowedSorts)
-            ? $request->get('sort_by')
-            : 'created_at';
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDirection = $request->get('sort_direction', 'desc');
 
-        $sortDirection = $request->get('sort_direction') === 'asc'
-            ? 'asc'
-            : 'desc';
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'created_at';
+        }
 
-        return response()->json(
-            Product::with(['category', 'supplier'])
-                ->orderBy($sortBy, $sortDirection)
-                ->paginate(8)
-        );
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+
+        $products = $query
+            ->orderBy($sortBy, $sortDirection)
+            ->paginate(8);
+
+        return response()->json([
+            'success' => true,
+            'data' => $products->items(),
+            'pagination' => [
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'per_page' => $products->perPage(),
+                'total' => $products->total(),
+                'prev_page_url' => $products->previousPageUrl(),
+                'next_page_url' => $products->nextPageUrl(),
+            ],
+        ]);
     }
     public function store(Request $request)
     {

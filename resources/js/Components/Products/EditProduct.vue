@@ -1,7 +1,6 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
-import axios from 'axios'
 import ProductModal from './ProductModal.vue'
+import { useEditProduct } from '../../Composables/Products/editProducts'
 
 const props = defineProps({
     show: Boolean,
@@ -13,75 +12,14 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'updated'])
 
-const categories = ref([])
-const suppliers = ref([])
-
-const form = ref({
-    category_id: '',
-    supplier_id: '',
-    sku: '',
-    name: '',
-    description: '',
-    cost_price: '',
-    selling_price: '',
-    stock: '',
-    reorder_level: '',
-    status: true,
-})
-
-const loading = ref(false)
-const error = ref('')
-
-async function fetchDropdowns() {
-    const [categoryRes, supplierRes] = await Promise.all([
-        axios.get('/api/categories'),
-        axios.get('/api/suppliers'),
-    ])
-
-    categories.value = categoryRes.data.data
-    suppliers.value = supplierRes.data.data
-}
-
-watch(
-    () => props.product,
-    (product) => {
-        if (product) {
-            form.value = {
-                category_id: product.category_id || '',
-                supplier_id: product.supplier_id || '',
-                sku: product.sku || '',
-                name: product.name || '',
-                description: product.description || '',
-                cost_price: product.cost_price || '',
-                selling_price: product.selling_price || '',
-                stock: product.stock || '',
-                reorder_level: product.reorder_level || '',
-                status: Boolean(product.status),
-            }
-        }
-    },
-    { immediate: true }
-)
-
-async function submit() {
-    if (!props.product) return
-
-    loading.value = true
-    error.value = ''
-
-    try {
-        const res = await axios.put(`/api/products/${props.product.id}`, form.value)
-
-        emit('updated', res.data.data)
-        emit('close')
-    } catch (e) {
-        error.value = e.response?.data?.message || 'Failed to update product.'
-    } finally {
-        loading.value = false
-    }
-}
-
-onMounted(fetchDropdowns)
+const {
+    categories,
+    suppliers,
+    form,
+    loading,
+    error,
+    submit,
+} = useEditProduct(props, emit)
 </script>
 
 <template>
@@ -112,7 +50,7 @@ onMounted(fetchDropdowns)
                     <option
                         v-for="category in categories"
                         :key="category.id"
-                        :value="category.id"
+                        :value="Number(category.id)"
                     >
                         {{ category.name }}
                     </option>
@@ -126,7 +64,7 @@ onMounted(fetchDropdowns)
                     <option
                         v-for="supplier in suppliers"
                         :key="supplier.id"
-                        :value="supplier.id"
+                        :value="Number(supplier.id)"
                     >
                         {{ supplier.name }}
                     </option>

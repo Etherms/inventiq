@@ -31,9 +31,11 @@ public function index(Request $request)
             $sortBy = 'created_at';
         }
 
+        $perPage = $request->get('per_page', 8);
+
         $categories = $query
             ->orderBy($sortBy, $sortDirection)
-            ->paginate(8);
+            ->paginate($perPage);
 
         return response()->json([
             'success' => true,

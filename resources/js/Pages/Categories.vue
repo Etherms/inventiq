@@ -1,11 +1,11 @@
 <script setup>
 import AppLayout from '../Layouts/AppLayout.vue'
+import DataTable from '../Components/Global/DataTable.vue'
+import CreateCategory from '../Components/Categories/CreateCategory.vue'
+import EditCategory from '../Components/Categories/EditCategory.vue'
 import { Search, Upload, Download } from 'lucide-vue-next'
 import { onMounted, ref, watch } from 'vue'
 import axios from 'axios'
-import CategoryTable from '../Components/Categories/CategoryTable.vue'
-import CreateCategory from '../Components/Categories/CreateCategory.vue'
-import EditCategory from '../Components/Categories/EditCategory.vue'
 
 const categories = ref([])
 const pagination = ref({})
@@ -21,9 +21,12 @@ const showEditModal = ref(false)
 const selectedCategory = ref(null)
 const fileInput = ref(null)
 
-const successMessage = ref('')
-const errorMessage = ref('')
-
+const columns = [
+    { key: 'name', label: 'Name', sortable: true, fallback: '-' },
+    { key: 'description', label: 'Description', sortable: true, fallback: 'No description' },
+    { key: 'created_at', label: 'Date Created', sortable: true, type: 'date' },
+    { key: 'actions', label: 'Actions', class: 'text-right', align: 'right' },
+]
 
 function editCategory(category) {
     selectedCategory.value = category
@@ -33,22 +36,11 @@ function editCategory(category) {
 async function deleteCategory(category) {
     if (!confirm(`Delete ${category.name}?`)) return
 
-    successMessage.value = ''
-    errorMessage.value = ''
-
     try {
-        const res = await axios.delete(`/api/categories/${category.id}`)
-
-        categories.value = categories.value.filter(
-            item => item.id !== category.id
-        )
-
-        successMessage.value =
-            res.data.message || 'Category deleted successfully.'
+        await axios.delete(`/api/categories/${category.id}`)
+        fetchCategories(currentPage.value)
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message ||
-            'Delete failed. Please try again.'
+        alert(error.response?.data?.message || 'Delete failed.')
     }
 }
 
@@ -67,9 +59,7 @@ async function fetchCategories(page = 1) {
 
         categories.value = res.data.data
         pagination.value = res.data.pagination
-        currentPage.value = page
-    } catch (error) {
-        console.error('Error fetching categories:', error)
+        currentPage.value = res.data.pagination.current_page
     } finally {
         loading.value = false
     }
@@ -87,7 +77,7 @@ function handleSort(column) {
 }
 
 function exportCategories() {
-    window.location.href = '/api/categories/export'
+    window.location.href = '/api/import-export/categories/export'
 }
 
 function openImport() {
@@ -96,44 +86,20 @@ function openImport() {
 
 async function importCategories(event) {
     const file = event.target.files[0]
-
     if (!file) return
 
     const formData = new FormData()
     formData.append('file', file)
 
-    try {
-        const res = await axios.post('/api/categories/import', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        })
+    await axios.post('/api/import-export/categories/import', formData)
 
-        const duplicates = res.data.duplicates || []
-
-        if (duplicates.length > 0) {
-            alert(
-                `Import completed.\n\nImported: ${res.data.imported}\nDuplicates found: ${res.data.duplicates_count}\n\nDuplicates:\n- ${duplicates.join('\n- ')}`
-            )
-        } else {
-            alert(`Import completed.\n\nImported: ${res.data.imported}\nNo duplicates found.`)
-        }
-
-        event.target.value = ''
-        fetchCategories(1)
-    } catch (error) {
-        console.error('Error importing categories:', error)
-        alert('Import failed. Please check your CSV file.')
-    }
+    event.target.value = ''
+    fetchCategories(1)
 }
 
-watch(search, () => {
-    fetchCategories(1)
-})
+watch(search, () => fetchCategories(1))
 
-onMounted(() => {
-    fetchCategories()
-})
+onMounted(() => fetchCategories())
 </script>
 
 <template>
@@ -141,11 +107,9 @@ onMounted(() => {
         <div class="space-y-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">
-                        Categories
-                    </h1>
+                    <h1 class="text-2xl font-bold text-gray-900">Categories</h1>
                     <p class="text-sm text-gray-500">
-                        Manage product categories, import records, and export category data.
+                        Manage product categories.
                     </p>
                 </div>
 
@@ -158,46 +122,25 @@ onMounted(() => {
                         @change="importCategories"
                     >
 
-                    <button
-                        type="button"
-                        @click="openImport"
-                        class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
+                    <button @click="openImport" class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm">
                         <Upload class="h-4 w-4" />
                         Import
                     </button>
 
-                    <button
-                        type="button"
-                        @click="exportCategories"
-                        class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
+                    <button @click="exportCategories" class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm">
                         <Download class="h-4 w-4" />
                         Export
                     </button>
 
                     <button
-                        type="button"
                         @click="showCreateModal = true"
-                        class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+                        class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white"
                     >
                         + Create Category
                     </button>
                 </div>
             </div>
-            <div
-                v-if="successMessage"
-                class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700"
-            >
-                {{ successMessage }}
-            </div>
 
-            <div
-                v-if="errorMessage"
-                class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
-                {{ errorMessage }}
-            </div>
             <div class="flex items-center rounded-xl bg-white px-4 py-4 shadow-sm">
                 <Search class="h-4 w-4 text-gray-500" />
                 <input
@@ -209,12 +152,15 @@ onMounted(() => {
             </div>
 
             <div class="overflow-hidden rounded-xl bg-white shadow-sm">
-                <CategoryTable
-                    :categories="categories"
+                <DataTable
+                    :rows="categories"
+                    :columns="columns"
                     :loading="loading"
                     :pagination="pagination"
                     :sort-by="sortBy"
                     :sort-direction="sortDirection"
+                    loading-message="Loading categories..."
+                    empty-message="No categories found."
                     @edit="editCategory"
                     @delete="deleteCategory"
                     @sort="handleSort"

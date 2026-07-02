@@ -8,13 +8,54 @@ use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
-     public function index()
+     public function index(Request $request)
     {
+        $query = Supplier::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('contact_person', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%");
+            });
+        }
+
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDirection = $request->get('sort_direction', 'desc');
+
+        $allowedSorts = [
+            'name',
+            'contact_person',
+            'email',
+            'phone',
+            'address',
+            'created_at',
+        ];
+
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'created_at';
+        }
+
+        $suppliers = $query
+            ->orderBy($sortBy, $sortDirection)
+            ->paginate(8);
+
         return response()->json([
             'success' => true,
-            'data' => Supplier::latest()->get(),
+            'data' => $suppliers->items(),
+            'pagination' => [
+                'current_page' => $suppliers->currentPage(),
+                'last_page' => $suppliers->lastPage(),
+                'per_page' => $suppliers->perPage(),
+                'total' => $suppliers->total(),
+                'prev_page_url' => $suppliers->previousPageUrl(),
+                'next_page_url' => $suppliers->nextPageUrl(),
+            ],
         ]);
-
     }
     public function store(Request $request){
         $validated = $request->validate([

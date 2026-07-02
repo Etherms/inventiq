@@ -47,22 +47,23 @@ const columns = [
                     @sort="$emit('sort', $event)"
                 />
 
-                <tbody class="divide-y divide-gray-100 h-119.75">
-                    <tr v-if="loading">
+                <tbody class="divide-y divide-gray-100 h-119.75" v-if="loading">
+                    <tr>
                         <td colspan="4" class="px-4 py-6 text-center text-gray-500">
                             Loading categories...
                         </td>
                     </tr>
-
-                    <tr v-else-if="categories.length === 0">
+                </tbody>
+                <tbody v-else-if="categories.length === 0">
+                    <tr>
                         <td colspan="4" class="px-4 py-6 text-center text-gray-500">
                             No categories found.
-                        </td>
+                        </td>s
                     </tr>
-
+                    </tbody>
+                <tbody v-else>
                     <tr
                         v-for="category in categories"
-                        v-else
                         :key="category.id"
                         class="hover:bg-gray-50"
                     >

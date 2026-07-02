@@ -16,6 +16,8 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Category Routes
-Route::apiResource('categories', CategoryController::class);
 Route::apiResource('suppliers', SupplierController::class);
 Route::apiResource('products', ProductController::class);
+Route::get('/categories/export', [CategoryController::class, 'export']);
+Route::post('/categories/import', [CategoryController::class, 'import']);
+Route::apiResource('categories', CategoryController::class);

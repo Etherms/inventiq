@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\SessionAuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StockMovementController;
+use App\Http\Controllers\Api\CategoryController;
 
 use Inertia\Inertia;
 

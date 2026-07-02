@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
-import AppLayout from '../../Layouts/AppLayout.vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
 import { Pencil, KeyRound } from 'lucide-vue-next'
 
 const props = defineProps({

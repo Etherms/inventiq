@@ -1,6 +1,6 @@
 import {
     LayoutDashboard,
-    Shield,
+    PersonStanding,
     FileText,
     Package,
     LayoutTemplate,
@@ -25,11 +25,6 @@ export const navigation = [
         icon: FileText,
     },
     {
-        label: "Super Admin",
-        href: "/admin",
-        icon: Shield,
-    },
-    {
         label: "Categories",
         href: "/categories",
         icon: AppWindow,
@@ -40,9 +35,9 @@ export const navigation = [
         icon: Building2,
     },
     {
-        label: "Layouts",
-        href: "/layouts",
-        icon: LayoutTemplate,
+        label: "Users",
+        href: "/users",
+        icon: PersonStanding,
     },
 
 ]

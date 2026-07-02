@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '../Layouts/AppLayout.vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
 import DataTable from '../Components/Global/DataTable.vue'
 import CreateSupplier from '../Components/Suppliers/CreateSupplier.vue'
 import EditSupplier from '../Components/Suppliers/EditSupplier.vue'

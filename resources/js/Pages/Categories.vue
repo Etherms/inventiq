@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '../Layouts/AppLayout.vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
 import DataTable from '../Components/Global/DataTable.vue'
 import CreateCategory from '../Components/Categories/CreateCategory.vue'
 import EditCategory from '../Components/Categories/EditCategory.vue'

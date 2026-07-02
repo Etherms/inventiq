@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import axios from 'axios'
-import AppLayout from '../Layouts/AppLayout.vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
 import StockStatistics from '../Components/StockMovement/StockStatistics.vue'
 import StockMovementTable from '../Components/StockMovement/StockMovementTable.vue'
 import StockMovementDetailsModal from '../Components/StockMovement/StockMovementDetailsModal.vue'

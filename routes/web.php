@@ -9,11 +9,13 @@ use Inertia\Inertia;
 Route::get('/', fn () => redirect()->route('login'));
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
-    Route::get('/register', fn () => Inertia::render('Auth/Register'))->name('register');
+    Route::get('/login', fn () => Inertia::render('Auth/Auth'))->name('login');
+    Route::get('/register', fn () => Inertia::render('Auth/Auth', [
+        'mode' => 'register',
+    ]))->name('register');
 
-    Route::post('/login', [SessionAuthController::class, 'login'])->name('login.store');
-    Route::post('/register', [SessionAuthController::class, 'register'])->name('register.store');
+    Route::post('/login', [SessionAuthController::class, 'login']);
+    Route::post('/register', [SessionAuthController::class, 'register']);
 });
 
 Route::middleware('auth')->group(function () {

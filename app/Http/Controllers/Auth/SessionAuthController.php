@@ -41,7 +41,7 @@ class SessionAuthController extends Controller
 
         if (! Auth::attempt($credentials)) {
             throw ValidationException::withMessages([
-                'email' => 'Invalid login credentials.',
+                'message' => 'Invalid email or password.',
             ]);
         }
 
@@ -59,4 +59,4 @@ class SessionAuthController extends Controller
 
         return redirect()->route('login');
     }
-}
+} 

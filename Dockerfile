@@ -4,11 +4,9 @@ FROM node:20-alpine AS frontend
 WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm install
 
 COPY . .
-
 RUN npm run build
 
 
@@ -30,9 +28,7 @@ RUN apk add --no-cache \
     sqlite-dev \
     mysql-client
 
-RUN docker-php-ext-configure gd \
-    --with-freetype \
-    --with-jpeg
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
 RUN docker-php-ext-install \
     pdo \
@@ -44,8 +40,6 @@ RUN docker-php-ext-install \
     exif
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-COPY --from=frontend /app/public/build ./public/build
 
 WORKDIR /var/www
 
@@ -61,7 +55,6 @@ RUN composer install \
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 COPY nginx/default.conf /etc/nginx/http.d/default.conf
-
 COPY docker/start.sh /start.sh
 
 RUN chmod +x /start.sh

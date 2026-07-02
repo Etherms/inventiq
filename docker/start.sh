@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-echo "Starting Laravel deployment..."
+echo "Starting Inventiq..."
 
 php artisan config:clear
 php artisan cache:clear
